@@ -2,6 +2,7 @@ const expres = require('express')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User.model')
+const jwtMiddleware = require('../middlewares/jwt.middleware')
 const router = expres.Router()
 const saltRounds = 10
 
@@ -84,6 +85,9 @@ router.post('/login', async (req, res, next) => {
     }
 })
 
+router.get('/verify', jwtMiddleware, async (req, res, next) => {
+    res.status(200).json(req.payload)
+})
 
 
 
