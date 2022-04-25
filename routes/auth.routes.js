@@ -1,11 +1,10 @@
 const expres = require('express')
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
 const User = require('../models/User.model')
-const jwtMiddleware = require('../middlewares/jwt.middleware')
+const { isAuthenticated } = require('../middlewares/jwt.middleware')
 const router = expres.Router()
 const saltRounds = 10
-
+const jwt = require('jsonwebtoken')
 
 router.post('/signup', async (req, res) => {
     try {
@@ -85,7 +84,7 @@ router.post('/login', async (req, res, next) => {
     }
 })
 
-router.get('/verify', jwtMiddleware, async (req, res, next) => {
+router.get('/verify', isAuthenticated, async (req, res, next) => {
     res.status(200).json(req.payload)
 })
 

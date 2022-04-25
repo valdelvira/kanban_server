@@ -1,19 +1,25 @@
-const jwt = require('jsonwebtoken')
+const { expressjwt: jwt } = require('express-jwt')
 
-const jwtMiddleware = (req, res, next) => {
-    const token = req.headers.authorization
-    if (!token) {
-        return res.status(401).json({ msg: 'No token, authorization denied' })
-    }
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        req.user = decoded
+const isAuthenticated = jwt({
+    secret: process.env.TOKEN_SECRET,
+    algorithms: ["HS256"],
+    requestProperty: 'payload',
+    getToken: getTokenFromHeaders
+})
 
-        next()
-    } catch (err) {
-        res.status(500).json({ msg: 'Invalid token', token: token })
+function getTokenFromHeaders(req) {
+
+    if (req.headers.authorization && req.headers.authorization.split(" ")[0] === "Bearer") {
+        const token = req.headers.authorization.split(" ")[1]
+
+        console.log('EXTRAYENDO DESDE EL MIDDLEWARE EL TOKEN ----- ', token)
+
+        return token
     }
+
+    return null
 }
 
-module.exports = jwtMiddleware
-
+module.exports = {
+    isAuthenticated
+}
